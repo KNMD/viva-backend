@@ -1,0 +1,24 @@
+[tool.poetry]
+name = "viva-backend"
+version = "0.1.0"
+description = ""
+authors = ["zhehan <zhehan@emotibot.com>"]
+readme = "README.md"
+packages = [{include = "viva_backend", from = "src"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+loguru = "^0.7.2"
+pydantic = "^2.7.1"
+fastapi = "^0.111.0"
+uvicorn = "^0.29.0"
+celery = {extras = ["redis"], version = "^5.4.0"}
+alembic = "^1.13.1"
+fastapi-pagination = "^0.12.24"
+asyncio = "^3.4.3"
+asyncpg = "^0.29.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
