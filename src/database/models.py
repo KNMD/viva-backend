@@ -11,13 +11,13 @@ class BaseRepo():
 
 class ModelProvider(Base, BaseRepo):
     __tablename__ = "model_provider"
-    id = Column(UUID, server_default=text('uuid_generate_v4()'), primary_key=True)
+    id = Column(UUID, primary_key=True)
     provider_name = Column(String(40), nullable=False)
     provider_type = Column(String(40), nullable=False)
 
 class Model(Base, BaseRepo):
-    __tablename__ = "model_provider"
-    id = Column(UUID, server_default=text('uuid_generate_v4()'), primary_key=True)
+    __tablename__ = "model"
+    id = Column(UUID, primary_key=True)
     provider_name = Column(String(40), nullable=False)
     provider_id = Column(UUID, nullable=False)
     model_name = Column(String(255), nullable=False)
