@@ -1,8 +1,8 @@
-"""Init
+"""init
 
-Revision ID: 792ed3543015
+Revision ID: 386c94eadc5a
 Revises: 
-Create Date: 2024-05-20 17:56:30.982214
+Create Date: 2024-05-20 21:52:59.595329
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '792ed3543015'
+revision: str = '386c94eadc5a'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -27,10 +27,12 @@ def upgrade() -> None:
     sa.Column('model_name', sa.String(length=255), nullable=False),
     sa.Column('model_type', sa.String(length=40), nullable=False),
     sa.Column('display_name', sa.String(length=40), nullable=True),
+    sa.Column('model_args', sa.JSON(), nullable=True),
     sa.Column('created_at', sa.TIMESTAMP(), server_default=sa.text('now()'), nullable=False),
     sa.Column('created_by', sa.String(length=100), nullable=False),
     sa.Column('last_update_at', sa.TIMESTAMP(), nullable=True),
     sa.Column('last_update_by', sa.String(length=100), nullable=True),
+    sa.Column('tenant', sa.String(length=36), nullable=False),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('model_provider',
@@ -41,6 +43,7 @@ def upgrade() -> None:
     sa.Column('created_by', sa.String(length=100), nullable=False),
     sa.Column('last_update_at', sa.TIMESTAMP(), nullable=True),
     sa.Column('last_update_by', sa.String(length=100), nullable=True),
+    sa.Column('tenant', sa.String(length=36), nullable=False),
     sa.PrimaryKeyConstraint('id')
     )
     # ### end Alembic commands ###

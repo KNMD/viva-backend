@@ -17,6 +17,9 @@ alembic = "^1.13.1"
 fastapi-pagination = "^0.12.24"
 asyncio = "^3.4.3"
 asyncpg = "^0.29.0"
+greenlet = "^3.0.3"
+faker = "^25.2.0"
+uuid = "^1.30"
 
 
 [build-system]
