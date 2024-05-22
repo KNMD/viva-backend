@@ -1,7 +1,7 @@
 
 
 from sqlalchemy import JSON, TIMESTAMP, UUID, Column, String, func
-# from .database import Base
+from .database import Base
 from sqlalchemy.orm import DeclarativeBase, Mapped, MappedAsDataclass, mapped_column
 
 class Base(MappedAsDataclass, DeclarativeBase):
@@ -16,19 +16,21 @@ class BaseRepo():
 
 class ModelProvider(Base, BaseRepo):
     __tablename__ = "model_provider"
-    id = Column(UUID, primary_key=True)
-    provider_name = Column(String(40), nullable=False)
-    provider_type = Column(String(40), nullable=False)
+    id = Column(String(40), primary_key=True)
+    name = Column(String(40), nullable=False)
+    implement_name = Column(String(40), nullable=False)
+    type = Column(String(40), nullable=False)
+    assets = Column(JSON, nullable=False)
+    credential_schema = Column(JSON, nullable=False)
 
 class Model(Base, BaseRepo):
     __tablename__ = "model"
-    id = Column(UUID, primary_key=True)
+    id = Column(String(40), primary_key=True)
     provider_name = Column(String(40), nullable=False)
-    provider_id = Column(UUID, nullable=False)
-    model_name = Column(String(255), nullable=False)
-    model_type = Column(String(40), nullable=False)
-    display_name = Column(String(40), nullable=True)
-    model_args = Column(JSON, nullable=True)
+    provider_id = Column(String(40), nullable=False)
+    name = Column(String(255), nullable=False)
+    type = Column(String(40), nullable=False)
+    args = Column(JSON, nullable=True)
 
 
 class User(Base):
@@ -37,5 +39,5 @@ class User(Base):
     name = Column(String(255), nullable=False)
     email = Column(String(255), nullable=False)
 
-    id = Column(UUID, primary_key=True)
+    id = Column(String(40), primary_key=True)
 

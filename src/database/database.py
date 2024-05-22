@@ -6,7 +6,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 
 # SQLALCHEMY_DATABASE_URL = os.environ.get("SQLALCHEMY_URL")
-SQLALCHEMY_DATABASE_URL = "postgresql+asyncpg://postgres:123456@localhost:5432/postgres"
+SQLALCHEMY_DATABASE_URL = "postgresql+asyncpg://postgres:123456@dev-host:5432/postgres"
 
 
 engine = None

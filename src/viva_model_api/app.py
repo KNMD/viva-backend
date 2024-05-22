@@ -7,7 +7,7 @@ import uvicorn
 
 app = FastAPI()
 add_pagination(app)
-app.include_router(model.router, prefix=f"/models")
+app.include_router(model.router, prefix=f"/model-service")
 
 
     
