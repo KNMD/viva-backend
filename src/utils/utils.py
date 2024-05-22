@@ -14,11 +14,12 @@ def model_autofill(model: BaseRepo, consumer: Consumer, **kwargs):
         model.last_update_by = consumer.id
     
     if hasattr(model, 'id') and not model.id:
-        model.id = ULID()
+        model.id = str(ULID())
     
     if kwargs:
         for key, value in kwargs.items():
             setattr(model, key, value)
     return model
     
+
         

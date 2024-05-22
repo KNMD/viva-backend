@@ -1,8 +1,48 @@
 import datetime
 from enum import Enum
+import json
 from typing import Any, Dict, Literal, Optional
+import typing
+from fastapi.responses import JSONResponse
 from pydantic import UUID4, BaseModel
 
+class ResponseEntity(BaseModel):
+  code: int
+  chain_code: Optional[int]
+  error_key: Optional[str]
+  message: Optional[str]
+  data: Optional[Any]
+  
+  @classmethod
+  def unknown_err(cls):
+    return ResponseEntity(
+      code=500,
+      error_key = "internal_error",
+      message = "Internal Error"
+    )
+
+  @classmethod
+  def agic_unknown_err(cls):
+    return ResponseEntity(
+      code=500,
+      error_key = "agic_unknown_error",
+      message = "AIGC unknown error"
+    )
+
+class CommonResponse(JSONResponse): 
+  def render(self, content: typing.Any) -> bytes:
+    responseData = {
+      'code': 0,
+      'data': content,
+      'message': None
+    }
+    return json.dumps(
+        responseData,
+        ensure_ascii=False,
+        allow_nan=False,
+        indent=None,
+        separators=(",", ":"),
+    ).encode("utf-8")
 
 class StandardOut(BaseModel):
     created_at: datetime.datetime
@@ -31,13 +71,13 @@ class UserIn(BaseModel):
 
 
 class UserOut(UserIn):
-    id: UUID4
+    id: str
 
     class Config:
         from_attributes = True
 
 class ModelProviderOut(BaseModel):
-    id: UUID4
+    id: str
     name: str
     type: str
     class_name: str
@@ -56,7 +96,8 @@ class ModelType(Enum):
     """
     Enum class for model type.
     """
-    LLM = "llm"
+    CHAT = "chat"
+    GENERATION = "generation"
     TEXT_EMBEDDING = "text-embedding"
     RERANK = "rerank"
     SPEECH2TEXT = "speech2text"
@@ -112,3 +153,24 @@ class FormSchema(BaseModel):
     max_length: int = 0
     # show_on: list[FormShowOnObject] = []
 
+
+class ModelOut(BaseModel):
+    id: str
+    provider_name: str
+    provider_id: str
+    name: str
+    type: str
+    context_window: int
+    support_vision: bool
+    args: Optional[Dict[str, Any]] = None
+
+    class Config:
+        from_attributes = True
+    
+class ModelInt(BaseModel):
+
+    name: str
+    type: ModelType
+    context_window: int
+    support_vision: bool
+    args: Optional[Dict[str, Any]] = None

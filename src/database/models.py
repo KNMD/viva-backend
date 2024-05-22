@@ -1,11 +1,14 @@
 
 
-from sqlalchemy import JSON, TIMESTAMP, UUID, Column, String, func
+from typing import Any, Dict, List
+from sqlalchemy import JSON, TIMESTAMP, UUID, Column, Integer, String, func, Boolean
+
+from schemas.core import Assets, ModelType
 from .database import Base
 from sqlalchemy.orm import DeclarativeBase, Mapped, MappedAsDataclass, mapped_column
 
-class Base(MappedAsDataclass, DeclarativeBase):
-    pass
+# class Base(MappedAsDataclass, DeclarativeBase):
+#     pass
 
 class BaseRepo():
     created_at = Column(TIMESTAMP, nullable=False, server_default=func.now())
@@ -16,21 +19,23 @@ class BaseRepo():
 
 class ModelProvider(Base, BaseRepo):
     __tablename__ = "model_provider"
-    id = Column(String(40), primary_key=True)
-    name = Column(String(40), nullable=False)
-    implement_name = Column(String(40), nullable=False)
-    type = Column(String(40), nullable=False)
-    assets = Column(JSON, nullable=False)
-    credential_schema = Column(JSON, nullable=False)
+    id: Mapped[str] = mapped_column(String(40), primary_key=True)
+    name: Mapped[str] = mapped_column(String(40), nullable=False)
+    class_name: Mapped[str] = mapped_column(String(40), nullable=False)
+    type: Mapped[str] = mapped_column(String(40), nullable=False)
+    assets: Mapped[List[Assets]] = mapped_column(JSON, nullable=True)
+    credential_schema: Mapped[Dict[str, Any]] = mapped_column(JSON, nullable=True)
 
 class Model(Base, BaseRepo):
     __tablename__ = "model"
-    id = Column(String(40), primary_key=True)
-    provider_name = Column(String(40), nullable=False)
-    provider_id = Column(String(40), nullable=False)
-    name = Column(String(255), nullable=False)
-    type = Column(String(40), nullable=False)
-    args = Column(JSON, nullable=True)
+    id: Mapped[str] = mapped_column(String(40), primary_key=True)
+    provider_name: Mapped[str] = mapped_column(String(40), nullable=False)
+    provider_id: Mapped[str] = mapped_column(String(40), nullable=False)
+    name : Mapped[str] = mapped_column(String(255), nullable=False)
+    type: Mapped[str] = mapped_column(String(40), nullable=False)
+    context_window: Mapped[int] = mapped_column(Integer, nullable=False)
+    support_vision: Mapped[bool] = mapped_column(Boolean, nullable=False)
+    args: Mapped[Dict[str, Any]] = mapped_column(JSON, nullable=True)
 
 
 class User(Base):
