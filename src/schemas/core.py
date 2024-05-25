@@ -174,3 +174,36 @@ class ModelInt(BaseModel):
     context_window: int
     support_vision: bool
     args: Optional[Dict[str, Any]] = None
+
+
+class CategoryEntity(BaseModel):
+    id: Optional[str] = None
+    name: str
+    parent_id: Optional[str] = None
+    assets: Optional[Assets] = None
+    plugin: str
+    ext: Optional[Dict[str, Any]] = None
+
+    class Config:
+        from_attributes = True
+
+class AppEntity(BaseModel):
+    id: Optional[str] = None
+    name: str
+    description: str
+    assets: Optional[Assets] = None
+    category_id: Optional[str] = None
+    app_config_id: str
+    status: int
+    plugin: Optional[str] = None
+    ext: Optional[Dict[str, Any]] = None
+
+class DatasetEntity(BaseModel):
+    id: Optional[str] = None
+    name: str
+    description: Optional[str] = None
+    assets: Optional[Assets] = None
+    category_id: Optional[str] = None
+    embedding_model: str
+    embedding_model_provider: str
+    retrieval_model: Optional[str]
