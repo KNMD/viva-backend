@@ -1,7 +1,7 @@
 import datetime
 from enum import Enum
 import json
-from typing import Any, Dict, Literal, Optional
+from typing import Any, Dict, List, Literal, Optional, Union
 import typing
 from fastapi.responses import JSONResponse
 from pydantic import UUID4, BaseModel
@@ -131,6 +131,7 @@ class FormType(Enum):
     SELECT = "select"
     RADIO = "radio"
     SWITCH = "switch"
+    API = "api"
 
 class FormOption(BaseModel):
     """
@@ -151,6 +152,7 @@ class FormSchema(BaseModel):
     options: Optional[list[FormOption]] = None
     placeholder: Optional[str] = None
     max_length: int = 0
+    api_id: Optional[str]
     # show_on: list[FormShowOnObject] = []
 
 
@@ -207,3 +209,43 @@ class DatasetEntity(BaseModel):
     embedding_model: str
     embedding_model_provider: str
     retrieval_model: Optional[str]
+
+class StartupEnhancer(BaseModel):
+    prompt: str
+    selections: Optional[List[str]] = None
+
+class SuggestionEnhancer(BaseModel):
+    model_id: str
+    prompt: str
+
+class TextToSpeechEnhancer(BaseModel):
+    model_id: str
+    language: str
+    voicer: str
+
+class SpeechToTextEnhancer(BaseModel):
+    model_id: str
+    stream_support: bool
+
+class ChatEnhancer(BaseModel):
+    enabled: bool
+    type: Literal["startup", "suggestion", "tts", "stt"]
+    settings: Union[StartupEnhancer, SuggestionEnhancer, TextToSpeechEnhancer, SpeechToTextEnhancer]
+
+class QueryEnchancer:
+    prompt: str
+    model_id: str
+
+class RagConfig(BaseModel):
+    datasets: List[str]
+    type: Literal["auto_prompt_append", "use_app_prompt"]
+    query_enhancer: Optional[QueryEnchancer] = None
+    
+
+class AppConfigEntity(BaseModel):
+    base_model_id: str
+    prompt: str
+    variables: List[FormSchema]
+    chat_enhancer: Optional[ChatEnhancer] = None
+    rag_config: Optional[RagConfig] = None
+    

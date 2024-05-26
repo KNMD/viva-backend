@@ -26,7 +26,7 @@ async def page(id: str, db: AsyncSession = Depends(get_db)):
     return await db.get(Dataset, id)
 
 @router.post("", response_model=DatasetEntity)
-async def save(entity: CategoryEntity, db: AsyncSession = Depends(get_db),  consumer = Depends(get_consumer)):
+async def save(entity: CategoryEntity, db: AsyncSession = Depends(get_db), consumer = Depends(get_consumer)):
     model = Dataset(
         **entity.model_dump()
     )
@@ -35,7 +35,7 @@ async def save(entity: CategoryEntity, db: AsyncSession = Depends(get_db),  cons
     return await db.get(Dataset, id)
 
 @router.put("/{id}", response_model=DatasetEntity)
-async def update(id: str, entity: CategoryEntity, db: AsyncSession = Depends(get_db),  consumer = Depends(get_consumer)):
+async def update(id: str, entity: CategoryEntity, db: AsyncSession = Depends(get_db), consumer = Depends(get_consumer)):
     model = await db.get(Dataset, id)
     if not model:
         raise HTTPException(status_code=404)
