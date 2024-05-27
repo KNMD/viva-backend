@@ -1,7 +1,8 @@
 
 
 from fastapi import APIRouter, Depends, HTTPException
-from fastapi_pagination import Page, paginate
+from fastapi_pagination import Page
+from fastapi_pagination.ext.sqlalchemy import paginate
 from sqlalchemy import select
 
 from schemas.core import AppEntity, CategoryEntity, CommonResponse, DatasetEntity

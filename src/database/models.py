@@ -1,5 +1,6 @@
 
 
+import datetime
 from typing import Any, Dict, List
 from sqlalchemy import JSON, TIMESTAMP, UUID, Column, Index, Integer, Numeric, String, Text, func, Boolean
 
@@ -11,17 +12,17 @@ class Base(MappedAsDataclass, DeclarativeBase):
     pass
 
 class BaseRepo():
-    created_at = Column(TIMESTAMP, nullable=False, server_default=func.now())
-    created_by = Column(String(100), nullable=False)
-    last_update_at = Column(TIMESTAMP, nullable=True, onupdate=func.now())
-    last_update_by = Column(String(100), nullable=True)
-    tenant = Column(String(36), nullable=False)
+    created_at: Mapped[datetime.datetime] = mapped_column(TIMESTAMP, nullable=False, server_default=func.now())
+    created_by: Mapped[str] = mapped_column(String(100), nullable=False)
+    last_update_at: Mapped[datetime.datetime] = mapped_column(TIMESTAMP, nullable=True, onupdate=func.now())
+    last_update_by: Mapped[str] = mapped_column(String(100), nullable=True)
+    tenant: Mapped[str] = mapped_column(String(36), nullable=False)
 
 
 class Seed(Base):
   __tablename__ = "seed"
-  key = Column(String(100), primary_key=True)
-  val = Column(Integer, nullable=False, server_default='0')
+  key: Mapped[str] = mapped_column(String(100), primary_key=True)
+  val: Mapped[int] = mapped_column(Integer, nullable=False, server_default='0')
     
 
 class ModelProvider(Base, BaseRepo):
@@ -161,6 +162,8 @@ class Category(Base, BaseRepo):
     name: Mapped[str] = mapped_column(String(255), nullable=False)
     parent_id: Mapped[str] = mapped_column(String(100), nullable=True)
     assets: Mapped[Dict[str, Any]] = mapped_column(JSON, nullable=True)
+
+    """self or others in plugin table"""
     plugin: Mapped[str] = mapped_column(String(50), nullable=True, index=True)
     ext: Mapped[Dict[str, Any]] = mapped_column(JSON, nullable=True)
 category_tenant_index = Index('category_tenant_index', Category.tenant, unique=False)

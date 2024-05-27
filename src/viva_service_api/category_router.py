@@ -1,7 +1,8 @@
 
 
 from fastapi import APIRouter, Depends, HTTPException
-from fastapi_pagination import Page, paginate
+from fastapi_pagination import Page
+from fastapi_pagination.ext.sqlalchemy import paginate
 from sqlalchemy import select
 
 from schemas.core import CategoryEntity, CommonResponse
@@ -29,12 +30,12 @@ async def page(id: str, db: AsyncSession = Depends(get_db)):
 @router.post("", response_model=CategoryEntity)
 async def save(entity: CategoryEntity, db: AsyncSession = Depends(get_db),  consumer = Depends(get_consumer)):
     model: Category = Category(
-        **entity.model_dump(),
-        id = await CommonService.category_hierarchy(entity.parent_id)
+        **entity.model_dump(exclude="id"),
+        id = await CommonService.category_hierarchy(db, entity.parent_id)
     )
     model_autofill(model, consumer)
-    await db.add(model)
-    return await db.get(Category, id)
+    db.add(model)
+    return await db.get(Category, model.id)
 
 @router.put("/{id}", response_model=CategoryEntity)
 async def update(id: str, entity: CategoryEntity, db: AsyncSession = Depends(get_db),  consumer = Depends(get_consumer)):
@@ -46,12 +47,13 @@ async def update(id: str, entity: CategoryEntity, db: AsyncSession = Depends(get
     model_autofill(model, consumer)
     return await db.get(Category, id)
 
-@router.delete("/{id}")
+@router.delete("/{id}", response_model=CategoryEntity)
 async def delete(id: str, db: AsyncSession = Depends(get_db)):
     model: Category = await db.get(Category, id)
     if not model:
         raise HTTPException(status_code=404)
-    db.delete(model)
+    await db.delete(model)
+    return model
 
 
 

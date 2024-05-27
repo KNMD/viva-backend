@@ -186,29 +186,6 @@ class CategoryEntity(BaseModel):
     class Config:
         from_attributes = True
 
-class AppEntity(BaseModel):
-    id: Optional[str] = None
-    name: str
-    description: str
-    assets: Optional[Assets] = None
-    category_id: Optional[str] = None
-    app_config_id: str
-    status: int
-    plugin: Optional[str] = None
-    ext: Optional[Dict[str, Any]] = None
-    class Config:
-        from_attributes = True
-
-class DatasetEntity(BaseModel):
-    id: Optional[str] = None
-    name: str
-    description: Optional[str] = None
-    assets: Optional[Assets] = None
-    category_id: Optional[str] = None
-    embedding_model: str
-    embedding_model_provider: str
-    retrieval_model: Optional[str]
-
 class StartupEnhancer(BaseModel):
     prompt: str
     selections: Optional[List[str]] = None
@@ -248,3 +225,30 @@ class AppConfigEntity(BaseModel):
     chat_enhancer: Optional[ChatEnhancer] = None
     rag_config: Optional[RagConfig] = None
     
+
+class AppEntity(StandardOut):
+    id: Optional[str] = None
+    name: str
+    description: Optional[str] = None
+    assets: Optional[Assets] = None
+    category_id: Optional[str] = None
+    app_config: Optional[AppConfigEntity] = None
+    status: Optional[int] = 0
+    plugin: Optional[str] = None
+    ext: Optional[Dict[str, Any]] = None
+    class Config:
+        from_attributes = True
+class AppEntityPatch(AppEntity):
+    name: Optional[str] = None
+
+class DatasetEntity(BaseModel):
+    id: Optional[str] = None
+    name: str
+    description: Optional[str] = None
+    assets: Optional[Assets] = None
+    category_id: Optional[str] = None
+    embedding_model: str
+    embedding_model_provider: str
+    retrieval_model: Optional[str]
+
+
