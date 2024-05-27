@@ -2,12 +2,15 @@ from fastapi import FastAPI
 from pathlib import Path
 from utils.app_register import register
 from fastapi_pagination import add_pagination
-import models_router as model
 import uvicorn
+from . import app_router, category_router, models_router, dataset_router
 
 app = FastAPI()
 add_pagination(app)
-app.include_router(model.router, prefix=f"/viva-service")
+app.include_router(app_router.router, prefix=f"/viva-service")
+app.include_router(category_router.router, prefix=f"/viva-service")
+app.include_router(models_router.router, prefix=f"/viva-service")
+app.include_router(dataset_router.router, prefix=f"/viva-service")
 register(app)
 
     

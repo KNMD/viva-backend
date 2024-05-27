@@ -4,7 +4,12 @@ import json
 from typing import Any, Dict, List, Literal, Optional, Union
 import typing
 from fastapi.responses import JSONResponse
-from pydantic import UUID4, BaseModel
+from pydantic import UUID4, BaseModel, ConfigDict
+
+
+class NamespaceConfig:
+    model_config = ConfigDict(protected_namespaces=())
+    pass
 
 class ResponseEntity(BaseModel):
   code: int
@@ -112,15 +117,6 @@ class AIModel(BaseModel):
     type: ModelType
     args: Optional[Dict[str, Any]]
 
-class ModelOut(StandardOut, AIModel):
-    id: UUID4
-    provider_name: str
-    provider_id: str
-    
-    
-
-    class Config:
-        from_attributes = True
 
 class FormType(Enum):
     """
@@ -156,7 +152,8 @@ class FormSchema(BaseModel):
     # show_on: list[FormShowOnObject] = []
 
 
-class ModelOut(BaseModel):
+
+class ModelOut(StandardOut):
     id: str
     provider_name: str
     provider_id: str
@@ -199,6 +196,8 @@ class AppEntity(BaseModel):
     status: int
     plugin: Optional[str] = None
     ext: Optional[Dict[str, Any]] = None
+    class Config:
+        from_attributes = True
 
 class DatasetEntity(BaseModel):
     id: Optional[str] = None
@@ -214,16 +213,16 @@ class StartupEnhancer(BaseModel):
     prompt: str
     selections: Optional[List[str]] = None
 
-class SuggestionEnhancer(BaseModel):
+class SuggestionEnhancer(NamespaceConfig, BaseModel):
     model_id: str
     prompt: str
 
-class TextToSpeechEnhancer(BaseModel):
+class TextToSpeechEnhancer(NamespaceConfig, BaseModel):
     model_id: str
     language: str
     voicer: str
 
-class SpeechToTextEnhancer(BaseModel):
+class SpeechToTextEnhancer(NamespaceConfig, BaseModel):
     model_id: str
     stream_support: bool
 
@@ -232,7 +231,7 @@ class ChatEnhancer(BaseModel):
     type: Literal["startup", "suggestion", "tts", "stt"]
     settings: Union[StartupEnhancer, SuggestionEnhancer, TextToSpeechEnhancer, SpeechToTextEnhancer]
 
-class QueryEnchancer:
+class QueryEnchancer(NamespaceConfig, BaseModel):
     prompt: str
     model_id: str
 

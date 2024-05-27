@@ -3,7 +3,7 @@
 from typing import Any, Dict, List
 from sqlalchemy import JSON, TIMESTAMP, UUID, Column, Index, Integer, Numeric, String, Text, func, Boolean
 
-from schemas.core import Assets, ModelType
+# from schemas.core import Assets, ModelType
 # from .database import Base
 from sqlalchemy.orm import DeclarativeBase, Mapped, MappedAsDataclass, mapped_column
 
@@ -30,7 +30,7 @@ class ModelProvider(Base, BaseRepo):
     name: Mapped[str] = mapped_column(String(40), nullable=False)
     class_name: Mapped[str] = mapped_column(String(40), nullable=False)
     type: Mapped[str] = mapped_column(String(40), nullable=False)
-    assets: Mapped[List[Assets]] = mapped_column(JSON, nullable=True)
+    assets: Mapped[List[Dict[str, Any]]] = mapped_column(JSON, nullable=True)
     credential_schema: Mapped[Dict[str, Any]] = mapped_column(JSON, nullable=True)
 
 
@@ -63,7 +63,8 @@ class App(Base, BaseRepo):
     description: Mapped[str] = mapped_column(Text, nullable=True)
     assets: Mapped[Dict[str, Any]] = mapped_column(JSON, nullable=True)
     category_id: Mapped[str] = mapped_column(String(4000), nullable=True)
-    app_config_id: Mapped[str] = mapped_column(String(255), nullable=True)
+    # app_config_id: Mapped[str] = mapped_column(String(255), nullable=True)
+    app_config: Mapped[Dict[str, Any]] = mapped_column(JSON, nullable=True)
     """
     -1 disabled, 0 editing, 1 public 2 private
     """

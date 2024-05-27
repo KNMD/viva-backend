@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from fastapi_pagination import Page, paginate
 from sqlalchemy import select
 
-from schemas.core import CategoryEntity, CommonResponse, ModelOut
+from schemas.core import CategoryEntity, CommonResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from database.database import get_db

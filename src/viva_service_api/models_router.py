@@ -1,6 +1,6 @@
 
 
-from typing import List
+from typing import List, Optional
 from fastapi import APIRouter, Depends
 from fastapi_pagination import Page
 from fastapi_pagination.ext.sqlalchemy import paginate
@@ -16,14 +16,19 @@ from utils.deps import get_consumer
 from utils.utils import model_autofill
 
 router = APIRouter(
-    default_response_class=CommonResponse,
+    prefix="/models",
+    default_response_class=CommonResponse
 )
 
-@router.get("/models", response_model=Page[ModelOut])
+@router.get("", response_model=Page[ModelOut])
 async def models(db: AsyncSession = Depends(get_db)):
     return await paginate(db, select(Model))
 
 
+@router.get("/{id}", response_model=Optional[ModelOut])
+async def models(id: str, db: AsyncSession = Depends(get_db)):
+    return await db.get(Model, id)
+    
 # @router.post("/providers/{provider_id}/models", response_model=List[ModelOut])
 # async def sync_models_by_provider(provider_id: str,  db: AsyncSession = Depends(get_db)):
 #     model_provider: ModelProvider = await db.get(ModelProvider, provider_id)

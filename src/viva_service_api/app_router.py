@@ -1,10 +1,11 @@
 
 
+from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi_pagination import Page, paginate
 from sqlalchemy import select
 
-from schemas.core import AppEntity, CategoryEntity, CommonResponse,
+from schemas.core import AppEntity, CategoryEntity, CommonResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from database.database import get_db
@@ -22,7 +23,7 @@ router = APIRouter(
 async def page(db: AsyncSession = Depends(get_db)):
     return await paginate(db, select(App))
 
-@router.get("/{id}", response_model=AppEntity)
+@router.get("/{id}", response_model=Optional[AppEntity])
 async def page(id: str, db: AsyncSession = Depends(get_db)):
     return await db.get(App, id)
 
