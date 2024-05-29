@@ -21,7 +21,7 @@ class ModelService():
 
         model_provider_instance: ModelProviderInstance = cls.create_model_provider_instance(model_provider)
         
-        valid = model_provider_instance.validate_provider_credentials(model_provider.credential_schema)
+        valid = model_provider_instance.validate_provider_credentials(model_provider.credential_config)
         if valid:
             ai_models: List[AIModel] = model_provider_instance.models()
             if ai_models and len(ai_models) > 0:

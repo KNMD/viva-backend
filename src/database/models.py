@@ -32,7 +32,7 @@ class ModelProvider(Base, BaseRepo):
     class_name: Mapped[str] = mapped_column(String(40), nullable=False)
     type: Mapped[str] = mapped_column(String(40), nullable=False)
     assets: Mapped[List[Dict[str, Any]]] = mapped_column(JSON, nullable=True)
-    credential_schema: Mapped[Dict[str, Any]] = mapped_column(JSON, nullable=True)
+    credential_config: Mapped[Dict[str, Any]] = mapped_column(JSON, nullable=True)
 
 
 class Model(Base, BaseRepo):
