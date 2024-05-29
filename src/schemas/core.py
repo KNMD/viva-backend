@@ -13,6 +13,8 @@ class NamespaceConfig:
 
 class ResponseEntity(BaseModel):
   code: int
+  chain_code: Optional[int]
+  error_key: Optional[str]
   message: Optional[str]
   data: Optional[Any]
   
@@ -22,6 +24,14 @@ class ResponseEntity(BaseModel):
       code=500,
       error_key = "internal_error",
       message = "Internal Error"
+    )
+
+  @classmethod
+  def agic_unknown_err(cls):
+    return ResponseEntity(
+      code=500,
+      error_key = "agic_unknown_error",
+      message = "AIGC unknown error"
     )
 
 class CommonResponse(JSONResponse): 
@@ -76,8 +86,7 @@ class ModelProviderOut(BaseModel):
     name: str
     type: str
     class_name: str
-    assets: Optional[Assets] = None
-    credential_config: Optional[Dict[str, Any]] = None
+    assets: Optional[Assets]
 
     class Config:
         from_attributes = True

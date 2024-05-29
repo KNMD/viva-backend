@@ -70,7 +70,9 @@ async def providers(provider_id: str, model_in: ModelInt, db: AsyncSession = Dep
 @router.post("/providers", response_model=ModelProviderOut)
 async def providers(model_provider_in: ModelProviderIn, db: AsyncSession = Depends(get_db), consumer = Depends(get_consumer)):
     logger.info("model_provider_in: {}", model_provider_in.model_dump())
-    provider = ModelProvider(**model_provider_in.model_dump())
+    provider: ModelProvider = ModelProvider(
+        **model_provider_in.model_dump()
+    )
     model_autofill(provider, consumer)
     db.add(provider)
     return await db.get(ModelProvider, provider.id)

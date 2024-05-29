@@ -2,6 +2,7 @@
 
 import datetime
 from typing import Any, Dict, List
+from loguru import logger
 from sqlalchemy import JSON, TIMESTAMP, UUID, Column, Index, Integer, Numeric, String, Text, func, Boolean
 
 # from schemas.core import Assets, ModelType
@@ -9,7 +10,8 @@ from sqlalchemy import JSON, TIMESTAMP, UUID, Column, Index, Integer, Numeric, S
 from sqlalchemy.orm import DeclarativeBase, Mapped, MappedAsDataclass, mapped_column
 
 class Base(MappedAsDataclass, DeclarativeBase):
-    pass
+    def __init__(self):
+        super.__init__()
 
 class BaseRepo():
     created_at: Mapped[datetime.datetime] = mapped_column(TIMESTAMP, nullable=False, server_default=func.now())
