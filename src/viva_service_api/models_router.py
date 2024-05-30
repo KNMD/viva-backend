@@ -13,7 +13,7 @@ from services.model_service import ModelService
 from fastapi.exceptions import HTTPException
 from loguru import logger
 from utils.deps import get_consumer
-from utils.utils import model_autofill
+from utils.utils import create_model_by_class, model_autofill
 
 router = APIRouter(
     prefix="/models",
@@ -70,7 +70,6 @@ async def providers(provider_id: str, model_in: ModelInt, db: AsyncSession = Dep
 @router.post("/providers", response_model=ModelProviderOut)
 async def providers(model_provider_in: ModelProviderIn, db: AsyncSession = Depends(get_db), consumer = Depends(get_consumer)):
     logger.info("model_provider_in: {}", model_provider_in.model_dump())
-    provider = ModelProvider(**model_provider_in.model_dump())
-    model_autofill(provider, consumer)
+    provider = create_model_by_class(ModelProvider, consumer, model_provider_in)
     db.add(provider)
     return await db.get(ModelProvider, provider.id)

@@ -1,4 +1,6 @@
 
+from typing import Type
+from pydantic import BaseModel
 from ulid import ULID
 from database.models import BaseRepo
 from schemas.core import Consumer
@@ -20,6 +22,18 @@ def model_autofill(model: BaseRepo, consumer: Consumer, **kwargs):
         for key, value in kwargs.items():
             setattr(model, key, value)
     return model
-    
+
+def create_model_by_class(repo_cls: Type[BaseRepo],  consumer: Consumer, entity: BaseModel, **kwargs) -> BaseRepo:
+
+    return repo_cls(
+        id = kwargs.get("id", ULID()),
+        created_by = consumer.id,
+        tenant = consumer.tenant,
+        last_update_by = consumer.id,
+        last_update_at = None,
+        created_at = None,
+        **entity.model_dump(),
+        **kwargs
+    )
 
         

@@ -87,6 +87,7 @@ class ModelProviderIn(BaseModel):
     type: Literal["self", "custom"]
     assets: Optional[Assets] = None
     class_name: str
+    credential_config: Optional[Dict[str, Any]] = None
 
 class ModelType(Enum):
     """
