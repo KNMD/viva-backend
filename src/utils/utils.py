@@ -1,5 +1,5 @@
 
-from typing import Type
+from typing import Any, Dict, Type
 from pydantic import BaseModel
 from ulid import ULID
 from database.models import BaseRepo
@@ -23,7 +23,7 @@ def model_autofill(model: BaseRepo, consumer: Consumer, **kwargs):
             setattr(model, key, value)
     return model
 
-def create_model_by_class(repo_cls: Type[BaseRepo],  consumer: Consumer, entity: BaseModel, **kwargs) -> BaseRepo:
+def create_model_by_class(repo_cls: Type[BaseRepo],  consumer: Consumer, entity_dic: Dict[str, Any], **kwargs) -> BaseRepo:
 
     return repo_cls(
         id = kwargs.get("id", ULID()),
@@ -32,8 +32,9 @@ def create_model_by_class(repo_cls: Type[BaseRepo],  consumer: Consumer, entity:
         last_update_by = consumer.id,
         last_update_at = None,
         created_at = None,
-        **entity.model_dump(),
+        **entity_dic,
         **kwargs
     )
+
 
         

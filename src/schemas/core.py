@@ -13,10 +13,10 @@ class NamespaceConfig:
 
 class ResponseEntity(BaseModel):
   code: int
-  chain_code: Optional[int]
   error_key: Optional[str]
   message: Optional[str]
   data: Optional[Any]
+
   
   @classmethod
   def unknown_err(cls):
@@ -49,7 +49,7 @@ class CommonResponse(JSONResponse):
         separators=(",", ":"),
     ).encode("utf-8")
 
-class StandardOut(BaseModel):
+class StandardEntity(BaseModel):
     created_at: datetime.datetime
     created_by: str
     last_update_at: Optional[datetime.datetime]
@@ -81,7 +81,7 @@ class UserOut(UserIn):
     class Config:
         from_attributes = True
 
-class ModelProviderOut(BaseModel):
+class ModelProviderEntity(StandardEntity):
     id: str
     name: str
     type: str
@@ -91,12 +91,23 @@ class ModelProviderOut(BaseModel):
     class Config:
         from_attributes = True
 
+class BaseCredential(BaseModel):
+    class Config:
+        from_attributes = True
+
+class OpenAICredential(BaseCredential):
+    type: Literal["openai"]
+    api_key: str
+    api_base: Optional[str] = None
+    org_id: Optional[str] = None
+
+
 class ModelProviderIn(BaseModel):
     name: str
     type: Literal["self", "custom"]
     assets: Optional[Assets] = None
-    class_name: str
-    credential_config: Optional[Dict[str, Any]] = None
+    credential_config: Optional[BaseCredential] = None
+    support_model_sync: bool = False
 
 class ModelType(Enum):
     """
@@ -154,7 +165,7 @@ class FormSchema(BaseModel):
 
 
 
-class ModelOut(StandardOut):
+class ModelOut(StandardEntity):
     id: str
     provider_name: str
     provider_id: str
@@ -174,7 +185,6 @@ class ModelInt(BaseModel):
     context_window: int
     support_vision: bool
     args: Optional[Dict[str, Any]] = None
-
 
 class CategoryEntity(BaseModel):
     id: Optional[str] = None
@@ -227,7 +237,7 @@ class AppConfigEntity(BaseModel):
     rag_config: Optional[RagConfig] = None
     
 
-class AppEntity(StandardOut):
+class AppEntity(StandardEntity):
     id: Optional[str] = None
     name: str
     description: Optional[str] = None

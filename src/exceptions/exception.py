@@ -2,7 +2,7 @@
 from typing import Dict, Optional
 from fastapi import Request
 from loguru import logger
-
+import schemas.error_code as err
 from pydantic import BaseModel
 from schemas.core import  ResponseEntity
 
@@ -34,3 +34,12 @@ class ResponseException(Exception):
     self.status = status
     self.error_key = error_key
     self.message = message
+
+  @classmethod
+  def err(cls, message: str = "Internal Error", status = 500, code = -1, error_var: Optional[str] = None):
+    error_key = None
+    if error_var != None:
+        error_key = error_var
+        code = eval(f"err.{error_var}")
+        message = None
+    return ResponseException(message, status, code, error_key)

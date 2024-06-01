@@ -8,10 +8,13 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from database.database import get_db
 from database.models import Model, ModelProvider, User
-from schemas.core import CommonResponse, ModelInt, ModelOut, ModelProviderIn, ModelProviderOut, UserOut
+from schemas.core import CommonResponse, ModelInt, ModelOut, ModelProviderEntity, ModelProviderIn
 from services.model_service import ModelService
 from fastapi.exceptions import HTTPException
 from loguru import logger
+from exceptions.exception import ResponseException
+from services.common_service import CommonService
+from services.model_provider.base import ModelProviderInstance
 from utils.deps import get_consumer
 from utils.utils import create_model_by_class, model_autofill
 
@@ -67,9 +70,25 @@ async def providers(provider_id: str, model_in: ModelInt, db: AsyncSession = Dep
     return await db.get(Model, model.id)
     
 
-@router.post("/providers", response_model=ModelProviderOut)
+@router.post("/providers", response_model=ModelProviderEntity)
 async def providers(model_provider_in: ModelProviderIn, db: AsyncSession = Depends(get_db), consumer = Depends(get_consumer)):
     logger.info("model_provider_in: {}", model_provider_in.model_dump())
-    provider = create_model_by_class(ModelProvider, consumer, model_provider_in)
+    
+    provider = create_model_by_class(
+        ModelProvider, 
+        consumer, 
+        model_provider_in.model_dump(exclude="support_model_sync"),
+        class_name = model_provider_in.name
+    )
+    
+    model_provider_instance: ModelProviderInstance = CommonService.model_provider_mapper(model_provider_in.name)()
+    try: 
+        if not (await model_provider_instance.validate_provider_credentials(provider)):
+            raise ResponseException.err(error_var="model_provider_auth_fail")
+        if model_provider_in.support_model_sync:
+            await model_provider_instance.sync_models(provider, consumer)
+
+    except NotImplementedError as e:
+        logger.info("class name: {} not implemented.", provider.class_name)
     db.add(provider)
     return await db.get(ModelProvider, provider.id)
