@@ -1,6 +1,6 @@
 
 
-from typing import List, Optional
+from typing import Dict, List, Optional
 from fastapi import APIRouter, Depends
 from fastapi_pagination import Page
 from fastapi_pagination.ext.sqlalchemy import paginate
@@ -15,8 +15,14 @@ from loguru import logger
 from exceptions.exception import ResponseException
 from services.common_service import CommonService
 from services.model_provider.base import ModelProviderInstance
+from services.model_provider.openai import OpenAIModelProviderInstance
 from utils.deps import get_consumer
 from utils.utils import create_model_by_class, model_autofill
+from config.settings import app_settings
+
+model_provider_mapper: Dict[str, ModelProviderInstance] = {
+    "openai": OpenAIModelProviderInstance
+}
 
 router = APIRouter(
     prefix="/models",
@@ -72,23 +78,23 @@ async def providers(provider_id: str, model_in: ModelInt, db: AsyncSession = Dep
 
 @router.post("/providers", response_model=ModelProviderEntity)
 async def providers(model_provider_in: ModelProviderIn, db: AsyncSession = Depends(get_db), consumer = Depends(get_consumer)):
-    logger.info("model_provider_in: {}", model_provider_in.model_dump())
     
-    provider = create_model_by_class(
+    provider:ModelProvider = create_model_by_class(
         ModelProvider, 
         consumer, 
-        model_provider_in.model_dump(exclude="support_model_sync"),
+        **model_provider_in.model_dump(exclude="support_model_sync"),
         class_name = model_provider_in.name
     )
     
-    model_provider_instance: ModelProviderInstance = CommonService.model_provider_mapper(model_provider_in.name)()
+    model_provider_instance: ModelProviderInstance = model_provider_mapper[model_provider_in.name]()
     try: 
         if not (await model_provider_instance.validate_provider_credentials(provider)):
             raise ResponseException.err(error_var="model_provider_auth_fail")
-        if model_provider_in.support_model_sync:
-            await model_provider_instance.sync_models(provider, consumer)
+        models_def = CommonService.do_load_models_definition().get(provider.name, None)
+        if models_def:
+            await model_provider_instance.sync_models(provider, consumer, db)
 
     except NotImplementedError as e:
-        logger.info("class name: {} not implemented.", provider.class_name)
+        logger.info("class name: {} not implemented. error: {}", provider.class_name, e)
     db.add(provider)
     return await db.get(ModelProvider, provider.id)

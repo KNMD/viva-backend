@@ -23,16 +23,15 @@ def model_autofill(model: BaseRepo, consumer: Consumer, **kwargs):
             setattr(model, key, value)
     return model
 
-def create_model_by_class(repo_cls: Type[BaseRepo],  consumer: Consumer, entity_dic: Dict[str, Any], **kwargs) -> BaseRepo:
+def create_model_by_class(repo_cls: Type[BaseRepo],  consumer: Consumer, **kwargs) -> BaseRepo:
 
     return repo_cls(
-        id = kwargs.get("id", ULID()),
+        id = kwargs.get("id", str(ULID())),
         created_by = consumer.id,
         tenant = consumer.tenant,
         last_update_by = consumer.id,
         last_update_at = None,
         created_at = None,
-        **entity_dic,
         **kwargs
     )
 

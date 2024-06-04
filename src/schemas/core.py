@@ -4,7 +4,7 @@ import json
 from typing import Any, Dict, List, Literal, Optional, Union
 import typing
 from fastapi.responses import JSONResponse
-from pydantic import UUID4, BaseModel, ConfigDict
+from pydantic import UUID4, BaseModel, ConfigDict, field_serializer
 
 
 class NamespaceConfig:
@@ -56,6 +56,14 @@ class StandardEntity(BaseModel):
     last_update_by: Optional[str]
     tenant: str
 
+
+    @field_serializer('created_at', 'last_update_at')
+    def serialize_dt(self, field: datetime.datetime, _info):
+        if field:
+            return int(field.timestamp() * 1000)
+        else: 
+            return None
+
 class Consumer(BaseModel):
     id: str
     name: str
@@ -106,29 +114,27 @@ class ModelProviderIn(BaseModel):
     name: str
     type: Literal["self", "custom"]
     assets: Optional[Assets] = None
-    credential_config: Optional[BaseCredential] = None
-    support_model_sync: bool = False
+    credential_config: Optional[Union[OpenAICredential]] = None
 
 class ModelType(Enum):
     """
     Enum class for model type.
     """
-    CHAT = "chat"
-    GENERATION = "generation"
+    LLM = "llm"
     TEXT_EMBEDDING = "text-embedding"
     RERANK = "rerank"
     SPEECH2TEXT = "speech2text"
     MODERATION = "moderation"
     TTS = "tts"
     TEXT2IMG = "text2img"
-    CLASSIFICATION = "classification"
 
 
 class AIModel(BaseModel):
-    name: str
-    type: ModelType
+    id: str
+    supportTypes: List[ModelType]
     args: Optional[Dict[str, Any]]
 
+    
 
 class FormType(Enum):
     """
@@ -171,8 +177,6 @@ class ModelOut(StandardEntity):
     provider_id: str
     name: str
     type: str
-    context_window: int
-    support_vision: bool
     args: Optional[Dict[str, Any]] = None
 
     class Config:

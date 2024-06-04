@@ -4,6 +4,7 @@ from utils.app_register import register
 from fastapi_pagination import add_pagination
 import uvicorn
 from . import app_router, category_router, models_router, dataset_router
+from config.settings import app_settings
 
 app = FastAPI()
 add_pagination(app)

@@ -1,0 +1,120 @@
+openai:
+  - id: "gpt-4o-2024-05-13"
+    supportTypes: 
+      - 'llm'
+    args:
+      contextWindow: 128000
+      supportVistion: true
+  - id: "gpt-4o"
+    supportTypes: 
+      - 'llm'
+    args:
+      contextWindow: 128000
+      supportVistion: true
+  - id: "gpt-4-1106-preview"
+    supportTypes: 
+      - 'llm'
+    args:
+      contextWindow: 128000
+      supportVistion: false
+  - id: "gpt-4-turbo-2024-04-09"
+    supportTypes: 
+      - 'llm'
+    args:
+      contextWindow: 128000
+      supportVistion: false
+  - id: "gpt-4-turbo"
+    supportTypes: 
+      - 'llm'
+    args:
+      contextWindow: 128000
+      supportVistion: false
+
+  - id: "gpt-4-32k"
+    supportTypes: 
+      - 'llm'
+    args:
+      contextWindow: 32000
+      supportVistion: false
+
+  - id: "gpt-4"
+    supportTypes: 
+      - 'llm'
+    args:
+      contextWindow: 128000
+      supportVistion: false
+
+  - id: "gpt-3.5-turbo-instruct"
+    supportTypes: 
+      - 'llm'
+    args:
+      contextWindow: 4096
+      supportVistion: false
+
+  - id: "gpt-3.5-turbo-0125"
+    supportTypes: 
+      - 'llm'
+    args:
+      contextWindow: 16385
+      supportVistion: false
+  - id: "gpt-3.5-turbo"
+    supportTypes: 
+      - 'llm'
+    args:
+      contextWindow: 16385
+      supportVistion: false
+  - id: "dall-e-3"
+    supportTypes: 
+      - 'text2img'
+    args:
+      promptMaxLen: 1000
+  - id: "tts-1"
+    supportTypes: 
+      - 'tts'
+    args:
+      promptMaxLen: 1000
+  - id: "tts-1-hd"
+    supportTypes: 
+      - 'tts'
+    supportVistion: true
+    args:
+      promptMaxLen: 1000
+  - id: "text-embedding-3-large"
+    supportTypes: 
+      - 'text-embedding'
+    supportVistion: true
+    args:
+      dimension: 3072
+  - id: "text-embedding-3-small"
+    supportTypes: 
+      - 'text-embedding'
+    args:
+      dimension: 1536
+  - id: "text-embedding-ada-002"
+    supportTypes: 
+      - 'text-embedding'
+    args:
+      promptMaxLenth: 1536
+  - id: "text-moderation-latest"
+    supportTypes: 
+      - 'moderation'
+    args:
+      maxToken: 32768
+  - id: "text-moderation-stable"
+    supportTypes: 
+      - 'moderation'
+    args:
+      maxToken: 32768
+  - id: "whisper-1"
+    supportTypes: 
+      - 'speech2text'
+    args:
+      supportAudioTypes: 
+        - mp3
+        - mp4
+        - mpeg
+        - mpga
+        - m4a
+        - wav
+        - webm
+  

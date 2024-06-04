@@ -2,7 +2,6 @@
 
 import datetime
 from typing import Any, Dict, List
-from loguru import logger
 from sqlalchemy import JSON, TIMESTAMP, UUID, Column, Index, Integer, Numeric, String, Text, func, Boolean
 
 # from schemas.core import Assets, ModelType
@@ -10,8 +9,7 @@ from sqlalchemy import JSON, TIMESTAMP, UUID, Column, Index, Integer, Numeric, S
 from sqlalchemy.orm import DeclarativeBase, Mapped, MappedAsDataclass, mapped_column
 
 class Base(MappedAsDataclass, DeclarativeBase):
-    def __init__(self):
-        super.__init__()
+    pass
 
 class BaseRepo():
     created_at: Mapped[datetime.datetime] = mapped_column(TIMESTAMP, nullable=False, server_default=func.now())
@@ -44,8 +42,6 @@ class Model(Base, BaseRepo):
     provider_id: Mapped[str] = mapped_column(String(40), nullable=False)
     name : Mapped[str] = mapped_column(String(255), nullable=False)
     type: Mapped[str] = mapped_column(String(40), nullable=False)
-    context_window: Mapped[int] = mapped_column(Integer, nullable=False)
-    support_vision: Mapped[bool] = mapped_column(Boolean, nullable=False)
     args: Mapped[Dict[str, Any]] = mapped_column(JSON, nullable=True)
 
 model_model_provider_index = Index('model_model_provider_tenent_index', Model.provider_id, Model.tenant, unique=False)
