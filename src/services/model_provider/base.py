@@ -27,7 +27,7 @@ class ModelProviderInstance(ABC):
     
     
     async def models(self, model_provider: ModelProvider) -> List[AIModel]:
-        return CommonService.do_load_models_definition()[model_provider.name]
+        return CommonService.do_load_models_definition()[model_provider.name].models
 
 
 
@@ -44,7 +44,7 @@ class ModelProviderInstance(ABC):
                             provider_name = model_provider.name, 
                             provider_id = model_provider.id,
                             name = ai_model.id,
-                            type = ai_model.supportTypes[0].value,
+                            type = ai_model.support_types[0].value,
                             args = ai_model.args
                         )
                     )

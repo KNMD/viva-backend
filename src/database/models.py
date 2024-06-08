@@ -28,7 +28,7 @@ class Seed(Base):
 class ModelProvider(Base, BaseRepo):
     __tablename__ = "model_provider"
     id: Mapped[str] = mapped_column(String(40), primary_key=True)
-    name: Mapped[str] = mapped_column(String(40), nullable=False)
+    name: Mapped[str] = mapped_column(String(40), nullable=False, index=True, unique=True)
     class_name: Mapped[str] = mapped_column(String(40), nullable=False)
     type: Mapped[str] = mapped_column(String(40), nullable=False)
     assets: Mapped[List[Dict[str, Any]]] = mapped_column(JSON, nullable=True)
@@ -44,6 +44,8 @@ class Model(Base, BaseRepo):
     type: Mapped[str] = mapped_column(String(40), nullable=False)
     args: Mapped[Dict[str, Any]] = mapped_column(JSON, nullable=True)
 
+
+model_model_provider_model_unique_index = Index('model_model_provider_model_unique_index', Model.provider_id, Model.tenant, Model.name, unique=True)
 model_model_provider_index = Index('model_model_provider_tenent_index', Model.provider_id, Model.tenant, unique=False)
 
 class User(Base):

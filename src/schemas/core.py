@@ -131,10 +131,11 @@ class ModelType(Enum):
 
 class AIModel(BaseModel):
     id: str
-    supportTypes: List[ModelType]
+    support_types: List[ModelType]
     args: Optional[Dict[str, Any]]
 
-    
+
+
 
 class FormType(Enum):
     """
@@ -145,6 +146,7 @@ class FormType(Enum):
     SELECT = "select"
     RADIO = "radio"
     SWITCH = "switch"
+    SLIDER = "slider"
     API = "api"
 
 class FormOption(BaseModel):
@@ -154,6 +156,12 @@ class FormOption(BaseModel):
     label: str
     value: str
 
+class SLiderConstraint(BaseModel):
+    type: Literal['slider']
+    max: float
+    min: float
+    step: float = 0.1
+
 class FormSchema(BaseModel):
     """
     form schema.
@@ -162,12 +170,19 @@ class FormSchema(BaseModel):
     label: str
     type: FormType
     required: bool = True
-    default: Optional[str] = None
-    options: Optional[list[FormOption]] = None
+    default: Optional[Any] = None
+    options: Optional[List[FormOption]] = None
     placeholder: Optional[str] = None
     max_length: int = 0
-    api_id: Optional[str]
+    api_id: Optional[str] = None
+    constraint: Optional[Union[SLiderConstraint]] = None
+    description: Optional[str] = None
     # show_on: list[FormShowOnObject] = []
+
+
+class ModelDefinitioin(BaseModel):
+    display_args: Dict[str, List[FormSchema]]
+    models: List[AIModel]
 
 
 

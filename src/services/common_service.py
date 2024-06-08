@@ -6,7 +6,7 @@ from database.models import Seed
 from sqlalchemy.ext.asyncio import AsyncSession
 import urllib.request
 import yaml
-from schemas.core import AIModel
+from schemas.core import AIModel, ModelDefinitioin
 from config.settings import app_settings
 
 
@@ -36,7 +36,7 @@ class CommonService:
             
 
     @classmethod
-    def do_load_models_definition(cls, model_def_url = None) -> Dict[str, List[AIModel]]:
+    def do_load_models_definition(cls, model_def_url = None) -> Dict[str, ModelDefinitioin]:
         if not model_def_url:
             model_def_url = app_settings.model_def_url
         yaml_data = None
@@ -50,9 +50,7 @@ class CommonService:
         data = yaml.safe_load(yaml_data)
         def_data = {}
         for k, v in data.items():
-            ai_models = []
-            for m in v:
-                ai_models.append(AIModel(**m))
-            def_data[k] = ai_models
+            
+            def_data[k] = ModelDefinitioin(**v)
 
         return def_data
