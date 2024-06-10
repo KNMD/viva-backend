@@ -1,14 +1,17 @@
 
 
+from langchain_openai import ChatOpenAI
 from loguru import logger
 from openai import OpenAI, AuthenticationError
 from typing import List
+import openai
 
 from sqlalchemy import select
 from services.model_provider.base import ModelProviderInstance
-from schemas.core import AIModel, ModelProviderEntity, ModelType, Consumer
+from schemas.core import AIModel, AppConfigEntity, ModelProviderEntity, ModelType, Consumer
 from database.models import Model, ModelProvider
 from openai.types import Model as OAIModel
+from langchain_core.language_models.base import BaseLanguageModel
 
 
 class OpenAIModelProviderInstance(ModelProviderInstance):
@@ -42,4 +45,16 @@ class OpenAIModelProviderInstance(ModelProviderInstance):
             
 
         return model_list
+    
+
         
+
+    async def model_impl(self, model: Model, app_config: AppConfigEntity) -> BaseLanguageModel:
+        model = ChatOpenAI(
+            base_url="https://api.aihubmix.com/v1",
+            api_key="sk-Fr57TA861M7kpFuq7d963a83095e46A4Ab5809C6E9EdD304",
+            streaming=True,
+            model="gpt-3.5-turbo-0125",
+        )
+
+        return model

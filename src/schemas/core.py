@@ -5,7 +5,8 @@ from typing import Any, Dict, List, Literal, Optional, Union
 import typing
 from fastapi.responses import JSONResponse
 from pydantic import UUID4, BaseModel, ConfigDict, field_serializer
-
+from openai.types.chat.chat_completion_chunk import ChatCompletionChunk
+from langchain.schema import BaseMessage
 
 class NamespaceConfig:
     model_config = ConfigDict(protected_namespaces=())
@@ -251,9 +252,14 @@ class RagConfig(BaseModel):
 class AppConfigEntity(BaseModel):
     base_model_id: str
     prompt: str
-    variables: List[FormSchema]
+    variables: Optional[List[FormSchema]] = None
     chat_enhancer: Optional[ChatEnhancer] = None
     rag_config: Optional[RagConfig] = None
+
+class AppInput(BaseModel):
+    conversation_id: Optional[str] = None
+    messages: Optional[BaseMessage] = None
+    variable_vals: Dict[str, Any] = None
     
 
 class AppEntity(StandardEntity):
@@ -280,5 +286,15 @@ class DatasetEntity(BaseModel):
     embedding_model: str
     embedding_model_provider: str
     retrieval_model: Optional[str]
+
+
+
+class AppCompletionChunk(ChatCompletionChunk):
+    
+    object: Literal["chat.completion.chunk", "image.generation", "speech.generation", "voice.transcript", "html.generation"]
+    
+class AppPreviewIn(BaseModel):
+    input: Optional[AppInput] = None
+    config: AppConfigEntity
 
 
