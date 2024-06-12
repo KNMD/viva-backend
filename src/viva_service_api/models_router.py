@@ -8,7 +8,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from database.database import get_db
 from database.models import Model, ModelProvider, User
-from schemas.core import CommonResponse, ModelInt, ModelOut, ModelProviderEntity, ModelProviderIn
+from schemas.core import CommonResponse, ModelInt, ModelEntity, ModelProviderEntity, ModelProviderIn
 from services.model_service import ModelService
 from fastapi.exceptions import HTTPException
 from loguru import logger
@@ -16,46 +16,36 @@ from exceptions.exception import ResponseException
 from services.common_service import CommonService
 from services.model_provider.base import ModelProviderInstance
 from services.model_provider.openai import OpenAIModelProviderInstance
+from services.model_provider.mapper import model_provider_mapper
 from utils.deps import get_consumer
 from utils.utils import create_model_by_class, model_autofill
 from config.settings import app_settings
-
-model_provider_mapper: Dict[str, ModelProviderInstance] = {
-    "openai": OpenAIModelProviderInstance
-}
 
 router = APIRouter(
     prefix="/models",
     default_response_class=CommonResponse
 )
 
-@router.get("", response_model=Page[ModelOut])
+@router.get("", response_model=Page[ModelEntity])
 async def models(db: AsyncSession = Depends(get_db)):
     return await paginate(db, select(Model))
 
 
-@router.get("/{id}", response_model=Optional[ModelOut])
+@router.get("/{id}", response_model=Optional[ModelEntity])
 async def models(id: str, db: AsyncSession = Depends(get_db)):
     return await db.get(Model, id)
     
-# @router.post("/providers/{provider_id}/models", response_model=List[ModelOut])
-# async def sync_models_by_provider(provider_id: str,  db: AsyncSession = Depends(get_db)):
-#     model_provider: ModelProvider = await db.get(ModelProvider, provider_id)
-#     if not model_provider:
-#         raise HTTPException(status_code=404)
-#     await ModelService.sync_models_by_provider(model_provider)
-#     return providers(provider_id, db)
 
-@router.get("/providers/{provider_id}/models", response_model=List[ModelOut])
+@router.get("/providers/{provider_id}/models", response_model=List[ModelEntity])
 async def providers(provider_id: str, db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(Model).where(Model.provider_id == provider_id))
     return result.fetchall()
 
-@router.get("/providers/{provider_id}/models/{model_id}", response_model=List[ModelOut])
+@router.get("/providers/{provider_id}/models/{model_id}", response_model=List[ModelEntity])
 async def providers(provider_id: str, model_id: str, db: AsyncSession = Depends(get_db)):
     return await db.get(Model, model_id)
 
-@router.delete("/providers/{provider_id}/models/{model_id}", response_model=ModelOut)
+@router.delete("/providers/{provider_id}/models/{model_id}", response_model=ModelEntity)
 async def providers(provider_id: str, model_id: str, db: AsyncSession = Depends(get_db)):
     model = await db.get(Model, model_id)
     if model:
@@ -64,7 +54,7 @@ async def providers(provider_id: str, model_id: str, db: AsyncSession = Depends(
         raise HTTPException(status_code=404)
     return model
 
-@router.post("/providers/{provider_id}/models", response_model=ModelOut)
+@router.post("/providers/{provider_id}/models", response_model=ModelEntity)
 async def providers(provider_id: str, model_in: ModelInt, db: AsyncSession = Depends(get_db), consumer = Depends(get_consumer)):
     provider = await db.get(ModelProvider, provider_id)
     if not provider:

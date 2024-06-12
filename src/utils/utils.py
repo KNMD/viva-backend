@@ -1,10 +1,10 @@
 
-from typing import Any, Dict, Type
+from typing import Any, Dict, List, Type
 from pydantic import BaseModel
 from ulid import ULID
 from database.models import BaseRepo
-from schemas.core import Consumer
-
+from schemas.core import Consumer, Message
+from langchain.schema import HumanMessage
 
 def model_autofill(model: BaseRepo, consumer: Consumer, **kwargs):
     
@@ -34,6 +34,9 @@ def create_model_by_class(repo_cls: Type[BaseRepo],  consumer: Consumer, **kwarg
         created_at = None,
         **kwargs
     )
+
+def messages_to_lc_message(messages: List[Message]) -> List[HumanMessage]:
+    return [HumanMessage(content=item.content) for item in messages]
 
 
         

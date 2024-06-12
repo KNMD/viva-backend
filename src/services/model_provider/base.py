@@ -18,7 +18,7 @@ from langchain.callbacks import AsyncIteratorCallbackHandler
 
 
 class ModelProviderInstance(BaseModel, ABC):
-    model_provider: ModelProvider
+    model_provider: ModelProviderEntity
 
     model_config = ConfigDict(protected_namespaces=())
     
@@ -40,7 +40,8 @@ class ModelProviderInstance(BaseModel, ABC):
 
     async def agenerate_task(self, model: Model, app_config: AppConfigEntity, messages: List[BaseMessage]):
         callback = AsyncIteratorCallbackHandler()
-        model_impl: BaseLanguageModel = self.model_impl(model, app_config)
+        model_impl: BaseLanguageModel = await self.model_impl(model, app_config)
+        
         task = asyncio.create_task(
             model_impl.agenerate(messages=[messages], callbacks=[callback])
         )

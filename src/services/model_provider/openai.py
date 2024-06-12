@@ -19,11 +19,11 @@ class OpenAIModelProviderInstance(ModelProviderInstance):
     def model_types(self) -> List[str]:
         return [ModelType.LLM, ModelType.TEXT_EMBEDDING, ModelType.SPEECH2TEXT, ModelType.MODERATION, ModelType.TTS, ModelType.TEXT2IMG]
     
-    async def validate_provider_credentials(self, model_provider: ModelProvider) -> bool:
-        if not model_provider.credential_config:
+    async def validate_provider_credentials(self) -> bool:
+        if not self.model_provider.credential_config:
             return False
         try:
-            model_list = await self.remove_models(model_provider)
+            model_list = await self.remove_models(self.model_provider)
         except AuthenticationError as e:
             logger.error("openai AuthenticationError: {}", e)
             return False

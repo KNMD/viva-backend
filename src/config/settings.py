@@ -15,7 +15,7 @@ class AppSettings(BaseSettings):
     model_def_url: str = "local:./config/models.yaml"
 
     model_provider_mapper: Dict[str, str] = {
-        "openai": "OpenAIModelProviderInstance"
+        "openai": "openai.OpenAIModelProviderInstance"
     }
 
 

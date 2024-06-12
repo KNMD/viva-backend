@@ -14,8 +14,9 @@ from langchain_openai import ChatOpenAI
 
 from pydantic import BaseModel
 from openai.types.chat.chat_completion_chunk import Choice, ChoiceDelta
+from utils.utils import messages_to_lc_message
 from utils.deps import get_consumer
-
+from langchain.callbacks import AsyncIteratorCallbackHandler
 from viva_endpoint.engine_service import EngineService
 
 router = APIRouter(
@@ -25,7 +26,18 @@ router = APIRouter(
 
 async def send_message(app_preview: AppPreviewIn, consumer: Consumer) -> AsyncIterable[str]:
     
-    task, callback = await EngineService.output(input = app_preview.input, app_config = app_preview.config, consumer = consumer)
+    # task, callback = await EngineService.output(input = app_preview.input, app_config = app_preview.config, consumer = consumer)
+    model = ChatOpenAI(
+        base_url="https://api.aihubmix.com/v1",
+        api_key="sk-Fr57TA861M7kpFuq7d963a83095e46A4Ab5809C6E9EdD304",
+        streaming=True,
+        model="gpt-3.5-turbo-0125",
+    )
+    callback = AsyncIteratorCallbackHandler()
+    # task = asyncio.create_task(
+    await model.agenerate(messages=[ messages_to_lc_message(app_preview.input.messages) ], callbacks=[callback])
+        # )
+    
     
     try:
         async for token in callback.aiter():
@@ -44,12 +56,15 @@ async def send_message(app_preview: AppPreviewIn, consumer: Consumer) -> AsyncIt
                     )
                 ]
             )
+            logger.info("comletion: {}", comletion)
             yield comletion.to_json() + "\n"
             # yield json.dumps(comletion)
+    except Exception as e:
+        print(f"Caught exception: {e}")
     finally:
         callback.done.set()
 
-    await task
+    # await task
 
 
 

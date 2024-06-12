@@ -6,7 +6,7 @@ import typing
 from fastapi.responses import JSONResponse
 from pydantic import UUID4, BaseModel, ConfigDict, field_serializer
 from openai.types.chat.chat_completion_chunk import ChatCompletionChunk
-from langchain.schema import BaseMessage
+from langchain.schema import ChatMessage
 
 class NamespaceConfig:
     model_config = ConfigDict(protected_namespaces=())
@@ -187,7 +187,7 @@ class ModelDefinitioin(BaseModel):
 
 
 
-class ModelOut(StandardEntity):
+class ModelEntity(StandardEntity):
     id: str
     provider_name: str
     provider_id: str
@@ -247,7 +247,10 @@ class RagConfig(BaseModel):
     datasets: List[str]
     type: Literal["auto_prompt_append", "use_app_prompt"]
     query_enhancer: Optional[QueryEnchancer] = None
-    
+
+class Message(BaseModel):
+    type: Optional[str] = "Human"
+    content: str
 
 class AppConfigEntity(BaseModel):
     base_model_id: str
@@ -258,7 +261,7 @@ class AppConfigEntity(BaseModel):
 
 class AppInput(BaseModel):
     conversation_id: Optional[str] = None
-    messages: Optional[BaseMessage] = None
+    messages: List[Message]
     variable_vals: Dict[str, Any] = None
     
 
@@ -294,7 +297,7 @@ class AppCompletionChunk(ChatCompletionChunk):
     object: Literal["chat.completion.chunk", "image.generation", "speech.generation", "voice.transcript", "html.generation"]
     
 class AppPreviewIn(BaseModel):
-    input: Optional[AppInput] = None
+    input: AppInput
     config: AppConfigEntity
 
 
