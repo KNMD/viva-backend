@@ -18,6 +18,11 @@ from utils.utils import messages_to_lc_message
 from utils.deps import get_consumer
 from langchain.callbacks import AsyncIteratorCallbackHandler
 from viva_endpoint.engine_service import EngineService
+from openai import AsyncOpenAI
+client = AsyncOpenAI(
+    base_url="https://api.aihubmix.com/v1",
+    api_key="sk-Fr57TA861M7kpFuq7d963a83095e46A4Ab5809C6E9EdD304",
+)
 
 router = APIRouter(
     default_response_class=CommonResponse,
@@ -27,42 +32,54 @@ router = APIRouter(
 async def send_message(app_preview: AppPreviewIn, consumer: Consumer) -> AsyncIterable[str]:
     
     # task, callback = await EngineService.output(input = app_preview.input, app_config = app_preview.config, consumer = consumer)
-    model = ChatOpenAI(
-        base_url="https://api.aihubmix.com/v1",
-        api_key="sk-Fr57TA861M7kpFuq7d963a83095e46A4Ab5809C6E9EdD304",
-        streaming=True,
+    # model = ChatOpenAI(
+    #     base_url="https://api.aihubmix.com/v1",
+    #     api_key="sk-Fr57TA861M7kpFuq7d963a83095e46A4Ab5809C6E9EdD304",
+    #     streaming=True,
+    #     model="gpt-3.5-turbo-0125",
+    # )
+    # callback = AsyncIteratorCallbackHandler()
+    # # task = asyncio.create_task(
+    # await model.agenerate(messages=[ messages_to_lc_message(app_preview.input.messages) ], callbacks=[callback])
+    #     # )
+    
+    async for chunk in await client.chat.completions.create(
         model="gpt-3.5-turbo-0125",
-    )
-    callback = AsyncIteratorCallbackHandler()
-    # task = asyncio.create_task(
-    await model.agenerate(messages=[ messages_to_lc_message(app_preview.input.messages) ], callbacks=[callback])
-        # )
-    
-    
-    try:
-        async for token in callback.aiter():
-            comletion = AppCompletionChunk(
-                id="123",
-                object="chat.completion.chunk",
-                created=int(time.time()),
-                model = "gpt-3.5-turbo-0125",
-                choices=[
-                    Choice(
-                        index=0, 
-                        delta=ChoiceDelta(
-                            role="assistant",
-                            content=token
-                        )
-                    )
-                ]
-            )
-            logger.info("comletion: {}", comletion)
-            yield comletion.to_json() + "\n"
-            # yield json.dumps(comletion)
-    except Exception as e:
-        print(f"Caught exception: {e}")
-    finally:
-        callback.done.set()
+        
+        messages=[{
+            "role": "user",
+            "content": "Generate a list of 20 great names for sentient cheesecakes that teach SQL"
+        }],
+        stream=True,
+    ):
+        # content = chunk["choices"][0].get("delta", {}).get("content")
+        # if content is not None:
+        #     print(content, end='')
+        yield f"{chunk.model_dump_json()}\n"
+    # try:
+    #     async for token in callback.aiter():
+    #         comletion = AppCompletionChunk(
+    #             id="123",
+    #             object="chat.completion.chunk",
+    #             created=int(time.time()),
+    #             model = "gpt-3.5-turbo-0125",
+    #             choices=[
+    #                 Choice(
+    #                     index=0, 
+    #                     delta=ChoiceDelta(
+    #                         role="assistant",
+    #                         content=token
+    #                     )
+    #                 )
+    #             ]
+    #         )
+    #         logger.info("comletion: {}", comletion)
+    #         yield comletion.to_json() + "\n"
+    #         # yield json.dumps(comletion)
+    # except Exception as e:
+    #     print(f"Caught exception: {e}")
+    # finally:
+    #     callback.done.set()
 
     # await task
 
