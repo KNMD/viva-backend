@@ -1,5 +1,6 @@
 
 
+import datetime
 from typing import Dict, List, Optional
 from fastapi import APIRouter, Depends
 from fastapi_pagination import Page
@@ -75,14 +76,17 @@ async def providers(model_provider_in: ModelProviderIn, db: AsyncSession = Depen
         **model_provider_in.model_dump(exclude="support_model_sync"),
         class_name = model_provider_in.name
     )
+    provider.created_at = datetime.datetime.now()
     
-    model_provider_instance: ModelProviderInstance = model_provider_mapper[model_provider_in.name]()
+    model_provider_instance: ModelProviderInstance = model_provider_mapper[model_provider_in.name](
+        model_provider = ModelProviderEntity.model_validate(provider)
+    )
     try: 
-        if not (await model_provider_instance.validate_provider_credentials(provider)):
+        if not (await model_provider_instance.validate_provider_credentials()):
             raise ResponseException.err(error_var="model_provider_auth_fail")
         models_def = CommonService.do_load_models_definition().get(provider.name, None)
         if models_def:
-            await model_provider_instance.sync_models(provider, consumer, db)
+            await model_provider_instance.sync_models(consumer, db)
 
     except NotImplementedError as e:
         logger.info("class name: {} not implemented. error: {}", provider.class_name, e)

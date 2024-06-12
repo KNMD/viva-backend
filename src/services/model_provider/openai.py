@@ -2,17 +2,18 @@
 
 from langchain_openai import ChatOpenAI
 from loguru import logger
-from openai import OpenAI, AuthenticationError
+from openai import AsyncOpenAI, OpenAI, AuthenticationError
 from typing import List
 import openai
 
 from sqlalchemy import select
 from services.model_provider.base import ModelProviderInstance
-from schemas.core import AIModel, AppConfigEntity, ModelProviderEntity, ModelType, Consumer
+from schemas.core import AIModel, AppConfigEntity, Message, ModelProviderEntity, ModelType, Consumer
 from database.models import Model, ModelProvider
 from openai.types import Model as OAIModel
 from langchain_core.language_models.base import BaseLanguageModel
-
+from openai.types.chat.chat_completion import ChatCompletion
+from openai.types.chat.chat_completion_chunk import ChatCompletionChunk
 
 class OpenAIModelProviderInstance(ModelProviderInstance):
 
@@ -23,19 +24,19 @@ class OpenAIModelProviderInstance(ModelProviderInstance):
         if not self.model_provider.credential_config:
             return False
         try:
-            model_list = await self.remove_models(self.model_provider)
+            model_list = await self.remote_models()
         except AuthenticationError as e:
             logger.error("openai AuthenticationError: {}", e)
             return False
         return len(model_list) > 0
     
     
-    async def remove_models(self, model_provider: ModelProvider) -> List[OAIModel]:
+    async def remote_models(self) -> List[OAIModel]:
         
         client = OpenAI(
-            organization=model_provider.credential_config.get("org_id", None),
-            base_url=model_provider.credential_config.get("api_base", None),
-            api_key=model_provider.credential_config.get("api_key", None),
+            organization=self.model_provider.credential_config.org_id,
+            base_url=self.model_provider.credential_config.api_base,
+            api_key=self.model_provider.credential_config.api_key,
         )
 
         model_list = []
@@ -51,10 +52,22 @@ class OpenAIModelProviderInstance(ModelProviderInstance):
 
     async def model_impl(self, model: Model, app_config: AppConfigEntity) -> BaseLanguageModel:
         model = ChatOpenAI(
-            base_url="https://api.aihubmix.com/v1",
-            api_key="sk-Fr57TA861M7kpFuq7d963a83095e46A4Ab5809C6E9EdD304",
+            base_url=self.model_provider.credential_config.api_base,
+            api_key=self.model_provider.credential_config.api_key,
             streaming=True,
-            model="gpt-3.5-turbo-0125",
+            model=model.name,
         )
 
         return model
+    
+    async def agenerate(self, model: Model, app_config: AppConfigEntity, messages: List[Message]):
+        
+        client = AsyncOpenAI(
+            base_url=self.model_provider.credential_config.api_base,
+            api_key=self.model_provider.credential_config.api_key,
+        )
+        return await client.chat.completions.create(
+            model=model.name,
+            messages=messages,
+            stream=True,
+        )

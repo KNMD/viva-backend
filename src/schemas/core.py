@@ -90,15 +90,6 @@ class UserOut(UserIn):
     class Config:
         from_attributes = True
 
-class ModelProviderEntity(StandardEntity):
-    id: str
-    name: str
-    type: str
-    class_name: str
-    assets: Optional[Assets]
-
-    class Config:
-        from_attributes = True
 
 class BaseCredential(BaseModel):
     class Config:
@@ -109,6 +100,18 @@ class OpenAICredential(BaseCredential):
     api_key: str
     api_base: Optional[str] = None
     org_id: Optional[str] = None
+
+class ModelProviderEntity(StandardEntity):
+    id: str
+    name: str
+    type: str
+    class_name: str
+    assets: Optional[Assets] = None
+    credential_config: Optional[Union[OpenAICredential]] = None
+
+    class Config:
+        from_attributes = True
+
 
 
 class ModelProviderIn(BaseModel):
@@ -249,7 +252,7 @@ class RagConfig(BaseModel):
     query_enhancer: Optional[QueryEnchancer] = None
 
 class Message(BaseModel):
-    type: Optional[str] = "Human"
+    role: Optional[str] = "user"
     content: str
 
 class AppConfigEntity(BaseModel):

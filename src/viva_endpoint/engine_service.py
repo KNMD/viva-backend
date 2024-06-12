@@ -18,7 +18,7 @@ class EngineService():
         model_provider = await cls.get_model_provider(model.provider_id)
         model_provider_instance: ModelProviderInstance = model_provider_mapper[model.provider_name](model_provider = model_provider)
 
-        return await model_provider_instance.agenerate_task(model, app_config, messages=input.messages)
+        return await model_provider_instance.agenerate(model, app_config, messages=input.messages)
 
         
     @classmethod
