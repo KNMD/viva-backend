@@ -2,7 +2,7 @@
 
 from langchain_openai import ChatOpenAI
 from loguru import logger
-from openai import AsyncOpenAI, OpenAI, AuthenticationError
+from openai import AsyncOpenAI, AsyncStream, OpenAI, AuthenticationError
 from typing import List
 import openai
 
@@ -60,7 +60,7 @@ class OpenAIModelProviderInstance(ModelProviderInstance):
 
         return model
     
-    async def agenerate(self, model: Model, app_config: AppConfigEntity, messages: List[Message]):
+    async def _agenerate(self, model: Model, app_config: AppConfigEntity, messages: List[Message]) ->  ChatCompletion | AsyncStream[ChatCompletionChunk]:
         
         client = AsyncOpenAI(
             base_url=self.model_provider.credential_config.api_base,

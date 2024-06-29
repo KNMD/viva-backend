@@ -18,8 +18,11 @@ class AppSettings(BaseSettings):
         "openai": "openai.OpenAIModelProviderInstance"
     }
 
+    message_memory_key_prefix: str = "MESSAGE_MEMORY_KEY_PREFIX_"
 
+    redis_url: str = "redis://dev-host:6379/0"
     
+    redis_default_ttl: int = 3000
 
         
 

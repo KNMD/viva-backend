@@ -201,10 +201,10 @@ plugins_tenant_index = Index('plugins_tenant_index', Plugins.tenant, unique=Fals
 class Message(Base):
     __tablename__ = 'messages'
     id: Mapped[str] = mapped_column(String(40), primary_key=True)
-    app_id: Mapped[str] = mapped_column(String(40))
-    app_name: Mapped[str] = mapped_column(String(255), nullable=False)
-    conversation_id: Mapped[str] = mapped_column(String(40))
-    conversation_name: Mapped[str] = mapped_column(String(255))
+    app_id: Mapped[str] = mapped_column(String(40), nullable=True)
+    app_name: Mapped[str] = mapped_column(String(255), nullable=True)
+    conversation_id: Mapped[str] = mapped_column(String(40), nullable=True)
+    conversation_name: Mapped[str] = mapped_column(String(255), nullable=True)
     model_provider_id: Mapped[str] = mapped_column(String(40))
     model_provider_name: Mapped[str] = mapped_column(String(255), nullable=False)
     model_id: Mapped[str] = mapped_column(String(40))
@@ -214,14 +214,11 @@ class Message(Base):
     node_info: Mapped[Dict[str, Any]] = mapped_column(JSON, nullable=True)
     type: Mapped[str] = mapped_column(String(40))
     content: Mapped[str] = mapped_column(Text)
-    tokens: Mapped[str] = mapped_column(Integer, nullable=False)
-    
+    token: Mapped[int] = mapped_column(Integer, nullable=False)
     error : Mapped[str] = mapped_column(Text, nullable=True)
-    
-    
-    tenant = Column(String(36), nullable=False)
-    created_at = Column(TIMESTAMP, nullable=False, server_default=func.now())
-    created_by = Column(String(100), nullable=False)
+    tenant: Mapped[str] = mapped_column(String(36), nullable=False)
+    created_at: Mapped[datetime.datetime] = mapped_column(TIMESTAMP, nullable=False, server_default=func.now())
+    created_by: Mapped[str] = mapped_column(String(100), nullable=False)
 messaage_tenant_app_index = Index('messaage_tenant_app_index', Message.tenant, Message.app_id, unique=False)
 messaage_tenant_app_conversation_index = Index('messaage_tenant_app_conversation_index', Message.tenant, Message.app_id, Message.conversation_id, unique=False)
 
@@ -300,4 +297,14 @@ expense_log_tenant_index = Index('expense_log_tenant_index', ExpenseLog.tenant, 
 expense_log_tenant_app_index = Index('expense_log_tenant_app_index', ExpenseLog.tenant, ExpenseLog.app_id, unique=False)
 expense_log_tenant_model_index = Index('expense_log_tenant_model_index', ExpenseLog.tenant, ExpenseLog.model_id, unique=False)
 
-
+class Interfaces(Base, BaseRepo):
+    __tablename__ = 'interfaces'
+    id: Mapped[str] = mapped_column(String(40), primary_key=True)
+    name: Mapped[str] = mapped_column(String(100), nullable=False)
+    """http, grpc, tcp"""
+    type: Mapped[str] = mapped_column(String(10),nullable=False)
+    stream: Mapped[bool] = mapped_column(Boolean, nullable=False)
+    url: Mapped[str] = mapped_column(String(500),nullable=False)
+    args: Mapped[Dict[str, Any]] = mapped_column(JSON, nullable=True)
+    response_parse_conf: Mapped[Dict[str, Any]] = mapped_column(JSON, nullable=True)
+    

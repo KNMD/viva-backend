@@ -51,11 +51,11 @@ class CommonResponse(JSONResponse):
     ).encode("utf-8")
 
 class StandardEntity(BaseModel):
-    created_at: datetime.datetime
-    created_by: str
-    last_update_at: Optional[datetime.datetime]
-    last_update_by: Optional[str]
-    tenant: str
+    created_at: Optional[datetime.datetime] = None
+    created_by: Optional[str] = None
+    last_update_at: Optional[datetime.datetime] = None
+    last_update_by: Optional[str] = None
+    tenant: Optional[str] = None
 
 
     @field_serializer('created_at', 'last_update_at')
@@ -254,16 +254,17 @@ class RagConfig(BaseModel):
 class Message(BaseModel):
     role: Optional[str] = "user"
     content: str
+    token: Optional[int] = None
 
 class AppConfigEntity(BaseModel):
     base_model_id: str
-    prompt: str
     variables: Optional[List[FormSchema]] = None
-    chat_enhancer: Optional[ChatEnhancer] = None
+    enhancers: Optional[List[ChatEnhancer]] = None
     rag_config: Optional[RagConfig] = None
 
 class AppInput(BaseModel):
     conversation_id: Optional[str] = None
+    conversation_ttl: Optional[int] = None
     messages: List[Message]
     variable_vals: Dict[str, Any] = None
     
@@ -293,14 +294,59 @@ class DatasetEntity(BaseModel):
     embedding_model_provider: str
     retrieval_model: Optional[str]
 
+class AppChoiceDeltaFunctionCall(BaseModel):
+    arguments: Optional[str] = None
+    name: Optional[str] = None
 
+class AppChoiceDeltaToolCallFunction(BaseModel):
+    arguments: Optional[str] = None
+    name: Optional[str] = None
 
-class AppCompletionChunk(ChatCompletionChunk):
-    
+class AppChoiceDeltaToolCall(BaseModel):
+    index: int
+    id: Optional[str] = None
+    function: Optional[AppChoiceDeltaToolCallFunction] = None
+    type: Optional[Literal["function"]] = None
+
+class AppChoiceDelta(BaseModel):
+    content: Optional[str] = None
+    function_call: Optional[AppChoiceDeltaFunctionCall] = None
+    role: Optional[Literal["system", "user", "assistant", "tool"]] = None
+    tool_calls: Optional[List[AppChoiceDeltaToolCall]] = None
+
+class AppChoice(BaseModel):
+    delta: AppChoiceDelta
+
+    finish_reason: Optional[Literal["stop", "length", "tool_calls", "content_filter", "function_call"]] = None
+
+    index: int
+
+class AppCompletionChunk(BaseModel):
+    id: str
+    choices: List[AppChoice]
+    created: int
+    model: str
     object: Literal["chat.completion.chunk", "image.generation", "speech.generation", "voice.transcript", "html.generation"]
+
     
 class AppPreviewIn(BaseModel):
     input: AppInput
-    config: AppConfigEntity
+    app: AppEntity
+
+class HttpInterfaceArgs(BaseModel):
+    type: Literal["http"]
+    headers: Dict[str, Any]
+    query: Dict[str, Any]
+    method: Literal['POST', 'GET', 'PATCH', 'DELETE', 'PUT', 'HEAD']
+    params: Dict[str, Any]
+    post_type: Literal['form', 'json']
+
+class InterfaceEntity(StandardEntity):
+    id: Optional[str] = None
+    name: str
+    stream: Optional[bool] = False
+    url: str
+    args: Optional[Union[HttpInterfaceArgs]] = None
+    response_parse_conf: Optional[Dict[str, Any]] = None
 
 

@@ -8,6 +8,7 @@ from typing import AsyncIterable, Awaitable
 from fastapi import APIRouter, Depends
 from fastapi.responses import StreamingResponse
 from loguru import logger
+from ulid import ULID
 from schemas.core import AppCompletionChunk, AppConfigEntity, AppEntity, AppPreviewIn, CommonResponse, Consumer
 
 from langchain_openai import ChatOpenAI
@@ -40,11 +41,12 @@ async def send_message(app_preview: AppPreviewIn, consumer: Consumer) -> AsyncIt
     # await model.agenerate(messages=[ messages_to_lc_message(app_preview.input.messages) ], callbacks=[callback])
     #     # )
     
-    async for chunk in await EngineService.output(
+    model_output = await EngineService.output(
         input = app_preview.input, 
-        app_config = app_preview.config, 
+        app = app_preview.app, 
         consumer = consumer
-    ):
+    )
+    async for chunk in model_output:
         yield f"data: {chunk.model_dump_json()}\n\n"
     
     yield "data: [DONE]"
