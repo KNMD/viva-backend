@@ -52,66 +52,90 @@ openai:
         - 'llm'
       args:
         context_window: 128000
-        support_vistion: true
+        support_vision: true
 
     - id: "gpt-4o"
       support_types: 
         - 'llm'
       args:
         context_window: 128000
-        support_vistion: true
+        support_vision: true
     - id: "gpt-4-1106-preview"
       support_types: 
         - 'llm'
       args:
         context_window: 128000
-        support_vistion: false
+        support_vision: false
     - id: "gpt-4-turbo-2024-04-09"
       support_types: 
         - 'llm'
       args:
         context_window: 128000
-        support_vistion: false
+        support_vision: false
     - id: "gpt-4-turbo"
       support_types: 
         - 'llm'
       args:
-        context_window: 128000
-        support_vistion: false
+        context_window: 4096
+        support_vision: false
+      display_args:
+        - variable: 'max_tokens'
+          constraint:
+            max: 4096
 
     - id: "gpt-4-32k"
       support_types: 
         - 'llm'
       args:
         context_window: 32000
-        support_vistion: false
+        support_vision: false
+      display_args:
+        - variable: 'max_tokens'
+          constraint:
+            max: 32768
 
     - id: "gpt-4"
       support_types: 
         - 'llm'
       args:
-        context_window: 128000
-        support_vistion: false
+        context_window: 8192
+        support_vision: false
+      display_args:
+        - variable: 'max_tokens'
+          constraint:
+            max: 8192
 
     - id: "gpt-3.5-turbo-instruct"
       support_types: 
         - 'llm'
       args:
         context_window: 4096
-        support_vistion: false
+        support_vision: false
+      display_args:
+        - variable: 'max_tokens'
+          constraint:
+            max: 4096
 
     - id: "gpt-3.5-turbo-0125"
       support_types: 
         - 'llm'
       args:
         context_window: 16385
-        support_vistion: false
+        support_vision: false
+      display_args:
+        - variable: 'max_tokens'
+          constraint:
+            max: 16385
     - id: "gpt-3.5-turbo"
       support_types: 
         - 'llm'
       args:
         context_window: 16385
-        support_vistion: false
+        support_vision: false
+      display_args:
+        - variable: 'max_tokens'
+          constraint:
+            max: 16385
     - id: "dall-e-3"
       support_types: 
         - 'text2img'
@@ -125,13 +149,13 @@ openai:
     - id: "tts-1-hd"
       support_types: 
         - 'tts'
-      support_vistion: true
+      support_vision: true
       args:
         prompt_max_len: 1000
     - id: "text-embedding-3-large"
       support_types: 
         - 'text-embedding'
-      support_vistion: true
+      support_vision: true
       args:
         dimension: 3072
     - id: "text-embedding-3-small"

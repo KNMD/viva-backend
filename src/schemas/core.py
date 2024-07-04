@@ -133,12 +133,6 @@ class ModelType(Enum):
     TEXT2IMG = "text2img"
 
 
-class AIModel(BaseModel):
-    id: str
-    support_types: List[ModelType]
-    args: Optional[Dict[str, Any]]
-
-
 
 
 class FormType(Enum):
@@ -183,6 +177,15 @@ class FormSchema(BaseModel):
     description: Optional[str] = None
     # show_on: list[FormShowOnObject] = []
 
+    class Config:
+        from_attributes = True
+
+
+class AIModel(BaseModel):
+    id: str
+    support_types: List[ModelType]
+    args: Optional[Dict[str, Any]] = None
+    display_args: Optional[List[Dict[str, Any]]] = None
 
 class ModelDefinitioin(BaseModel):
     display_args: Dict[str, List[FormSchema]]
@@ -197,6 +200,7 @@ class ModelEntity(StandardEntity):
     name: str
     type: str
     args: Optional[Dict[str, Any]] = None
+    display_args: Optional[List[FormSchema]] = None
 
     class Config:
         from_attributes = True

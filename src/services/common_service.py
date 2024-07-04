@@ -36,7 +36,7 @@ class CommonService:
             
 
     @classmethod
-    def do_load_models_definition(cls, model_def_url = None) -> Dict[str, ModelDefinitioin]:
+    async def do_load_models_definition(cls, model_def_url = None) -> Dict[str, ModelDefinitioin]:
         if not model_def_url:
             model_def_url = app_settings.model_def_url
         yaml_data = None

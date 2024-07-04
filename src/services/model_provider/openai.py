@@ -25,7 +25,7 @@ class OpenAIModelProviderInstance(ModelProviderInstance):
             return False
         try:
             model_list = await self.remote_models()
-        except AuthenticationError as e:
+        except Exception as e:
             logger.error("openai AuthenticationError: {}", e)
             return False
         return len(model_list) > 0
