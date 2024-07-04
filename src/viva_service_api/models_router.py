@@ -23,6 +23,7 @@ from utils.utils import create_model_by_class, model_autofill
 from config.settings import app_settings
 from collections import defaultdict
 
+
 router = APIRouter(
     prefix="/models",
     default_response_class=CommonResponse
